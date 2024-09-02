@@ -1,14 +1,13 @@
 ﻿using ChatApp_Api.Data;
 using ChatApp_Api.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp_Api.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsersController : ControllerBase
+    public class UsersController : BaseApiController
     {
         private readonly DataContext _context;
 
@@ -16,15 +15,19 @@ namespace ChatApp_Api.Controllers
         {
             _context = context;
         }
+      
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUsers()
         {
             return Ok(await _context.Users.ToListAsync());
-        }
+        } 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetUserById(int id)
         {
             return Ok(await _context.Users.FirstOrDefaultAsync(u=>u.Id==id));
         }
+     
     }
 }

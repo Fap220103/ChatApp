@@ -1,5 +1,11 @@
 using ChatApp_Api.Data;
+using ChatApp_Api.Extensions;
+using ChatApp_Api.Interfaces;
+using ChatApp_Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ChatApp_Api
 {
@@ -15,10 +21,20 @@ namespace ChatApp_Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddDbContext<DataContext>(options =>
+            builder.Services.AddApplicationServices(builder.Configuration);
+         
+            builder.Services.AddCors(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+
+                    });
             });
+            builder.Services.AddIdentityServices(builder.Configuration);
 
             var app = builder.Build();
 
@@ -28,9 +44,11 @@ namespace ChatApp_Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseCors("AllowSpecificOrigin");
             app.UseHttpsRedirection();
 
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
 

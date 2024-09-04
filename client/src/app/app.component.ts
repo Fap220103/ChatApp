@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { User } from './models/user.model';
+import { AccountService } from './_services/account.service';
+
 
 @Component({
   selector: 'app-root',
@@ -11,21 +13,18 @@ import { User } from './models/user.model';
 export class AppComponent implements OnInit {
   title = 'client';
   users$!: Observable<User[]>;
-  constructor(private http: HttpClient){
+  constructor(private accountService: AccountService){
+
+  } 
+  ngOnInit() {
+  
+   this.setCurrentUser();
+  }
+  setCurrentUser(){
+    const userString = localStorage.getItem('user'); // Lấy giá trị từ localStorage
+    const user: User = userString ? JSON.parse(userString) : null; // Kiểm tra null trước khi parse
+    this.accountService.setCurrentUser(user);
 
   }
-  ngOnInit() {
-    this.http.get<User[]>('https://localhost:5001/api/users')
-    .pipe(res => of(res))
-    .subscribe({
-      next: (res)=>{
-        console.log(res);
-        this.users$ = res;
-        
-      },
-      error: (err) =>{
-        console.log(err);
-      }
-    });
-  }
+ 
 }

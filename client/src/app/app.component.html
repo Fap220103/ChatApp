@@ -1,11 +1,17 @@
-<h1></h1>
-<div *ngIf="users$ | async as usersList; else NoUser">
-  <ul *ngFor='let item of usersList; index as idx'>
-      <li>{{item.id}}</li>
-      <li>{{item.userName}}</li>
-      
-  </ul>
-</div>
+<app-nav></app-nav>
+
+  <!-- <div class="container ctn">
+    <div *ngIf="users$ | async as usersList; else NoUser">
+      <ul *ngFor='let item of usersList; index as idx'>
+       
+          <li>{{item.userName}}</li>
+          
+      </ul>
+    </div>
+  </div> -->
+
+<app-home></app-home>
+
 <!-- <button class="btn btn-primary">Bootstrap Button</button> -->
 <!-- <div class="fa fa-user"></div> -->
 <ng-template #NoUser>

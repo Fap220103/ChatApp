@@ -2,36 +2,37 @@ import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../_services/account.service';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+
 
 @Component({
   selector: 'app-nav',
-  templateUrl: './Nav.component.html',
-  styleUrls: ['./Nav.component.css']
+  templateUrl: './nav.component.html',
+  styleUrls: ['./nav.component.css']
 })
 export class NavComponent implements OnInit {
   model: any = {}
-
+  categoryList: string[] = [
+    "matches",
+    "lists",
+    "messages"
+  ];
   currentUser$!: Observable<User | null>;
-  constructor(private accountService: AccountService) { }
-  currentUser!: User;
+  constructor(private accountService: AccountService,
+            private router: Router,
+            private toastr: ToastrService) { }
+  
   ngOnInit() {
     this.currentUser$ = this.accountService.currentUser$;
-    const userJson = localStorage.getItem('user'); // Lấy dữ liệu từ localStorage
-    if (userJson) {
-      this.currentUser = JSON.parse(userJson) as User; // Chuyển đổi từ JSON sang User
-    }
   }
 
   login() {
     this.accountService.login(this.model)
       .subscribe({
         next: (res) => {
-          localStorage.setItem('currentUser',JSON.stringify(res));
-          console.log(res);
-        },
-        error: (err) => {
-          console.log("error");
-          console.log(err);
+          this.router.navigate(['/members']);
+          this.toastr.success("Đăng nhập thành công","Thành công")
         }
       })
   }
@@ -39,6 +40,7 @@ export class NavComponent implements OnInit {
   logout() {
     this.accountService.logout();
     localStorage.removeItem('currentUser');
+    this.router.navigate(['/']);
   }
  
 }

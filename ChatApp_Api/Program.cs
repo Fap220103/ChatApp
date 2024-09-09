@@ -1,6 +1,7 @@
 using ChatApp_Api.Data;
 using ChatApp_Api.Extensions;
 using ChatApp_Api.Interfaces;
+using ChatApp_Api.Middleware;
 using ChatApp_Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,7 @@ namespace ChatApp_Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseCors("AllowSpecificOrigin");
             app.UseHttpsRedirection();
 

@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { User } from './models/user.model';
 import { AccountService } from './_services/account.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 @Component({
@@ -13,7 +14,8 @@ import { AccountService } from './_services/account.service';
 export class AppComponent implements OnInit {
   title = 'client';
   users$!: Observable<User[]>;
-  constructor(private accountService: AccountService){
+  constructor(private accountService: AccountService,
+              ){
 
   } 
   ngOnInit() {
@@ -26,5 +28,5 @@ export class AppComponent implements OnInit {
     this.accountService.setCurrentUser(user);
 
   }
- 
+  
 }

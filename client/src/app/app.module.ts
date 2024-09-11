@@ -20,6 +20,10 @@ import { TestErrorsComponent } from './errors/test-errors/test-errors.component'
 import { CommonModule } from '@angular/common';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { NotFoundComponent } from './errors/not-found/not-found.component';
+import { MemberDetailComponent } from './members/member-detail/member-detail.component';
+import { MemberListComponent } from './members/member-list/member-list.component';
+import { MemberCardComponent } from './members/member-card/member-card.component';
+import { JwtInterceptor } from './_interceptor/jwt.interceptor';
 @NgModule({
   declarations: [					
     AppComponent,
@@ -30,7 +34,10 @@ import { NotFoundComponent } from './errors/not-found/not-found.component';
       MessagesComponent,
       TestErrorsComponent,
       NotFoundComponent,
-      ServerErrorComponent
+      ServerErrorComponent,
+      MemberDetailComponent,
+      MemberListComponent,
+      MemberCardComponent
       
    ],
   imports: [
@@ -43,7 +50,8 @@ import { NotFoundComponent } from './errors/not-found/not-found.component';
     CommonModule
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]
 })

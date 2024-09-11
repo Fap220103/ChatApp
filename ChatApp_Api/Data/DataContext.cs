@@ -9,6 +9,6 @@ namespace ChatApp_Api.Data
         {
         }
         public DbSet<AppUser> Users { get; set; }
-
+        
     }
 }

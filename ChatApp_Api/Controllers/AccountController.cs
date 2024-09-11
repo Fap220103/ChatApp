@@ -59,7 +59,11 @@ namespace ChatApp_Api.Controllers
                 if (computedHash[i] != user.PasswordHash[i]) 
                     return Unauthorized("Invalid Password");
             }
-            return Ok(user);
+            return Ok(new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            });
         }
         private async Task<bool> UserExists(string username)
         {

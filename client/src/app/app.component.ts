@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { User } from './models/user.model';
+import { User } from './_models/user.model';
 import { AccountService } from './_services/account.service';
 import { ToastrService } from 'ngx-toastr';
 

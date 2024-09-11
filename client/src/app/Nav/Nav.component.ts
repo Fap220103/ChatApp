@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../_services/account.service';
 import { Observable } from 'rxjs';
-import { User } from '../models/user.model';
+import { User } from '../_models/user.model';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
@@ -32,7 +32,11 @@ export class NavComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.router.navigate(['/members']);
-          this.toastr.success("Đăng nhập thành công","Thành công")
+          // this.toastr.success("Đăng nhập thành công","Thành công")
+        },
+        error: (err) => {
+          console.error('Đăng nhập thất bại', err);
+          // Xử lý lỗi nếu cần
         }
       })
   }

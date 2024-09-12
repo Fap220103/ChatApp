@@ -28,7 +28,7 @@ namespace ChatApp_Api.Services
             var tokenDecriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddMinutes(30),
+                Expires = DateTime.Now.AddHours(3),
                 SigningCredentials = creds
             };
             var tokenHandler = new JwtSecurityTokenHandler();

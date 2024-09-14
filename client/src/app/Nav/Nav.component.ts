@@ -31,6 +31,7 @@ export class NavComponent implements OnInit {
     this.accountService.login(this.model)
       .subscribe({
         next: (res) => {
+          console.log(res);
           this.router.navigate(['/members']);
           // this.toastr.success("Đăng nhập thành công","Thành công")
         },

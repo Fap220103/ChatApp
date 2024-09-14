@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AccountService } from '../_services/account.service';
 import { ToastrService } from 'ngx-toastr';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -11,14 +12,17 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidatorFn, Vali
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  model: any = {};
+ 
   registerForm!: FormGroup;
   maxDate!: Date;
+  validationErrors: string[] = [];
+
   @Output() cancelRegister = new EventEmitter<boolean>();
 
   constructor(private accountService: AccountService,
     private toastr: ToastrService,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private router: Router) { }
 
   ngOnInit() {
     this.intitializeForm();
@@ -50,17 +54,17 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    // this.accountService.register(this.model).subscribe({
-    //   next: (res)=>{   
-    //     this.cancel();
-    //     this.toastr.success("Đăng ký thành công","Thành công")
-    //   },
-    //   error: (err)=>{
-    //     console.log(err);
-    //     this.toastr.error(err.error,"Lỗi")
-    //   }
-    // })
-    console.log(this.registerForm.value);
+    this.accountService.register(this.registerForm.value).subscribe({
+      next: (res)=>{   
+        this.router.navigateByUrl('/members');
+        this.toastr.success("Đăng ký thành công","Thành công")
+      },
+      error: (err)=>{
+        this.validationErrors = err;
+
+      }
+    })
+    
   }
 
   cancel() {

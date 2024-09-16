@@ -20,8 +20,8 @@ namespace ChatApp_Api.Services
             string signatureKey = _configuration["TokenBear:SignatureKey"];
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.NameId,user.UserName),
-
+                new Claim(JwtRegisteredClaimNames.NameId,user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName,user.UserName),
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signatureKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

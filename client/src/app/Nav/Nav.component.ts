@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { User } from '../_models/user';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { MembersService } from '../_services/members.service';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class NavComponent implements OnInit {
   currentUser$!: Observable<User | null>;
   constructor(private accountService: AccountService,
             private router: Router,
-            private toastr: ToastrService) { }
+            private toastr: ToastrService,
+            private memberService: MembersService) { }
   
   ngOnInit() {
     this.currentUser$ = this.accountService.currentUser$;
@@ -31,7 +33,6 @@ export class NavComponent implements OnInit {
     this.accountService.login(this.model)
       .subscribe({
         next: (res) => {
-          console.log(res);
           this.router.navigate(['/members']);
           // this.toastr.success("Đăng nhập thành công","Thành công")
         },
@@ -43,6 +44,7 @@ export class NavComponent implements OnInit {
   }
 
   logout() {
+    
     this.accountService.logout();
     localStorage.removeItem('currentUser');
     this.router.navigate(['/']);

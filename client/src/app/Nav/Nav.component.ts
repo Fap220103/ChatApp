@@ -18,6 +18,7 @@ export class NavComponent implements OnInit {
     "matches",
     "lists",
     "messages"
+   
   ];
   currentUser$!: Observable<User | null>;
   constructor(private accountService: AccountService,
@@ -44,7 +45,6 @@ export class NavComponent implements OnInit {
   }
 
   logout() {
-    
     this.accountService.logout();
     localStorage.removeItem('currentUser');
     this.router.navigate(['/']);

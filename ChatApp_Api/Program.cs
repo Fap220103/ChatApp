@@ -1,9 +1,12 @@
 ﻿using ChatApp_Api.Data;
+using ChatApp_Api.Entities;
 using ChatApp_Api.Extensions;
 using ChatApp_Api.Interfaces;
 using ChatApp_Api.Middleware;
 using ChatApp_Api.Services;
+using ChatApp_Api.SignalR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -33,12 +36,14 @@ namespace ChatApp_Api
                 options.AddPolicy("AllowSpecificOrigin",
                     builder =>
                     {
-                        builder.AllowAnyOrigin()
+                        builder.WithOrigins("http://localhost:4200")
                                 .AllowAnyHeader()
+                                .AllowCredentials()
                                 .AllowAnyMethod();
 
                     });
             });
+            builder.Services.AddSignalR();
             builder.Services.AddIdentityServices(builder.Configuration);
 
             var app = builder.Build();
@@ -50,10 +55,12 @@ namespace ChatApp_Api
                 try
                 {
                     var context = services.GetRequiredService<DataContext>();
+                    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+                    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
                     // Áp dụng migration (tạo database nếu chưa có và áp dụng thay đổi)
                     await context.Database.MigrateAsync();
                     // Gọi phương thức SeedUsers để seed dữ liệu người dùng
-                    await Seed.SeedUsers(context);
+                    await Seed.SeedUsers(userManager,roleManager);
                 }
                 catch (Exception ex)
                 {
@@ -79,6 +86,9 @@ namespace ChatApp_Api
 
 
             app.MapControllers();
+            // Cấu hình endpoint cho Hub
+            app.MapHub<PresenceHub>("hubs/presence");
+            app.MapHub<MessageHub>("hubs/message");
 
             app.Run();
         }

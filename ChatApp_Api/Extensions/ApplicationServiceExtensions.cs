@@ -2,6 +2,7 @@
 using ChatApp_Api.Helpers;
 using ChatApp_Api.Interfaces;
 using ChatApp_Api.Services;
+using ChatApp_Api.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace ChatApp_Api.Extensions
@@ -14,6 +15,7 @@ namespace ChatApp_Api.Extensions
             {
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddSingleton<PresenceTracker>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPhotoService, PhotoService>();

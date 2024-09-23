@@ -33,7 +33,6 @@ namespace ChatApp_Api.Controllers
             _photoService = photoService;
             _context = context;
         }
-      
         [HttpGet]
         public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
         {

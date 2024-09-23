@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { User } from './_models/user';
 import { AccountService } from './_services/account.service';
 import { ToastrService } from 'ngx-toastr';
+import { PresenceService } from './_services/presence.service';
 
 
 @Component({
@@ -13,20 +14,21 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class AppComponent implements OnInit {
   title = 'client';
-  users$!: Observable<User[]>;
-  constructor(private accountService: AccountService,
-              ){
-
-  } 
+  constructor(private accountService: AccountService, private presence: PresenceService ) {}
   ngOnInit() {
-  
-   this.setCurrentUser();
+    this.setCurrentUser();
   }
-  setCurrentUser(){
+  setCurrentUser() {
     const userString = localStorage.getItem('user'); // Lấy giá trị từ localStorage
-    const user: User = userString ? JSON.parse(userString) : null; // Kiểm tra null trước khi parse
-    this.accountService.setCurrentUser(user);
+    if (!userString) return;
+      const user: User = JSON.parse(userString);
+      if(user){
+        this.accountService.setCurrentUser(user);
+        this.presence.createHubConnection(user);
+      }
+    
+  
 
   }
-  
+
 }

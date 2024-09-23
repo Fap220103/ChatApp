@@ -14,23 +14,23 @@ export class MemberMessagesComponent implements OnInit {
   @Input() username!: string;
   messageContent!: string;
   loading = false;
-  constructor(private messageService: MessageService) { }
+  arraymess: Message[] = [];
+  constructor(public messageService: MessageService) { }
 
   ngOnInit() {
-    
+    this.messageService.messageThread$.subscribe(mess =>{
+      this.arraymess = mess;
+    });
+    console.log(this.arraymess)
   }
  
   sendMessage(){
     this.loading=true;
-    this.messageService.sendMessage(this.username, this.messageContent).subscribe(
-     {
-      next: (message) =>{
-        this.messages.push(message);
-        this.messageForm.reset();
-      },
-      complete: () =>{
-        this.loading = false;
-      }
-     })
+    this.messageService.sendMessage(this.username, this.messageContent)
+    .then(() => {
+      this.messageForm?.reset();
+    })
+    .finally(() => this.loading = false);
   }
 }
+ 

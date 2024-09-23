@@ -6,16 +6,18 @@
         <li class="nav-item" *ngFor="let category of categoryList">
           <a class="nav-link" [routerLink]="category" routerLinkActive="active">{{category | titlecase}}</a>
         </li>
+        <li *appHasRole="['Admin','Moderator']" class="nav-item">
+          <a class="nav-link" routerLink="/admin" routerLinkActive="active">Admin</a>
+        </li>
       </ng-container>
       <li class="nav-item">
         <a class="nav-link" routerLink="/errors" routerLinkActive="active">Errors</a>
-
       </li>
 
     </ul>
     <div class="dropdown" *ngIf="(currentUser$ | async) as user" dropdown>
       <img src="{{user.photoUrl || './assets/user.png'}}" alt="{{user.username}}" />
-      <a class="dropdown-toggle text-light text-decoration-none title" dropdownToggle>Welcome {{user.knownAs | titlecase}}
+      <a class="dropdown-toggle text-light text-decoration-none title" dropdownToggle>Welcome {{user.knownAs || user.username| titlecase}}
       </a>
       <div class="dropdown-menu mt-3" *dropdownMenu>
         <a class="dropdown-item" routerLink="/member/edit">Edit profile</a>

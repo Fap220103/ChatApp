@@ -30,7 +30,7 @@ export class MemberListComponent implements OnInit {
   loadMembers() {
     this.memberService.setUserParams(this.userParams);
     this.memberService.getMembers(this.userParams).subscribe(response => {
-      console.log(response);
+      //console.log(response);
       this.members = response.result;
       this.pagination = response.pagination;
     })

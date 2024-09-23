@@ -44,11 +44,11 @@ export class MembersService {
   }
 
   getMembers(userParams: UserParams) {
-    console.log(this.user);
+    //console.log(this.user);
     const cacheKey = this.user.username + '-' + Object.values(userParams).join('-');
-    console.log(cacheKey);
+    //console.log(cacheKey);
     var response = this.memberCache.get(cacheKey);
-    console.log(this.memberCache);
+    //console.log(this.memberCache);
     if (response) {
       return of(response);
     }

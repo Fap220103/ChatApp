@@ -5,8 +5,8 @@ import { ToastrService } from 'ngx-toastr';
 import { Observable, catchError, throwError } from 'rxjs';
 
 @Injectable()
-export class ErrorInterceptor implements HttpInterceptor{
-  constructor(private router: Router, private toastr: ToastrService){}
+export class ErrorInterceptor implements HttpInterceptor {
+  constructor(private router: Router, private toastr: ToastrService) { }
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -28,11 +28,14 @@ export class ErrorInterceptor implements HttpInterceptor{
             case 401:
               this.toastr.error('Unauthorised', error.status.toString());
               break;
+            case 403:
+              this.toastr.error('Unauthorised', "You cannot enter this area");
+              break;
             case 404:
               this.router.navigateByUrl('/not-found');
               break;
             case 500:
-              const navigationExtras: NavigationExtras = {state: {error: error.error}};
+              const navigationExtras: NavigationExtras = { state: { error: error.error } };
               this.router.navigateByUrl('/server-error', navigationExtras);
               break;
             default:

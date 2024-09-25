@@ -16,62 +16,49 @@ namespace ChatApp_Api.Controllers
     [Authorize]
     public class UsersController : BaseApiController
     {
-   
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IPhotoService _photoService;
-        private readonly DataContext _context;
-
-        public UsersController(IUserRepository userRepository,
-                                IMapper mapper,
-                                IPhotoService photoService,
-                                DataContext context)
+        private readonly IUnitOfWork _unitOfWork;
+        public UsersController(IMapper mapper,
+                               IPhotoService photoService,
+                               IUnitOfWork unitOfWork)
         {
-           
-            _userRepository = userRepository;
             _mapper = mapper;
             _photoService = photoService;
-            _context = context;
+            _unitOfWork = unitOfWork;
+
         }
         [HttpGet]
-        public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery]UserParams userParams)
+        public async Task<ActionResult<PagedList<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
-            var user = await _userRepository.GetByUsernameAsync(User.GetUserName());
+            var gender = await _unitOfWork.UserRepository.GetUserGender(User.GetUserName());
 
-            userParams.CurrentUsername = user.UserName;
-            if(string.IsNullOrEmpty(userParams.Gender))
+            userParams.CurrentUsername = User.GetUserName();
+            if (string.IsNullOrEmpty(userParams.Gender))
             {
-                userParams.Gender = user.Gender == "male" ? "female" : "male";
+                userParams.Gender = gender == "male" ? "female" : "male";
             }
-            var users = await _userRepository.GetMembersAsync(userParams);
-            Response.AddPaginationHeader(users.CurrentPage,users.PageSize,users.TotalCount,users.TotalPages);
+            var users = await _unitOfWork.UserRepository.GetMembersAsync(userParams);
+            Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
             return Ok(users);
         }
-        //[HttpGet("{username}")]
 
-        //public async Task<ActionResult<MemberDto>> GetUserById(string username)
-        //{
-        //    var user = await _userRepository.GetByUsernameAsync(username);
-        //    var userreturn = _mapper.Map<MemberDto>(user);
-        //    return Ok(userreturn);
-
-        //}
-        [HttpGet("{username}", Name ="GetUser")]
+        [HttpGet("{username}", Name = "GetUser")]
 
         public async Task<ActionResult<MemberDto>> GetUserById(string username)
         {
-            return await _userRepository.GetMemberAsync(username);
+            return await _unitOfWork.UserRepository.GetMemberAsync(username);
 
         }
         [HttpPut]
         public async Task<IActionResult> UpdateUser(MemberUpdateDto memberUpdateDto)
         {
-            var user = await _userRepository.GetByUsernameAsync(User.GetUserName());
+            var user = await _unitOfWork.UserRepository.GetByUsernameAsync(User.GetUserName());
 
             _mapper.Map(memberUpdateDto, user);
 
-            _userRepository.Update(user);
-            if(await _userRepository.SaveAllAsync())
+            _unitOfWork.UserRepository.Update(user);
+            if (await _unitOfWork.Complete())
             {
                 return NoContent();
             }
@@ -80,41 +67,41 @@ namespace ChatApp_Api.Controllers
         [HttpPost("add-photo")]
         public async Task<IActionResult> AddPhoto(IFormFile file)
         {
-            var user = await _userRepository.GetByUsernameAsync(User.GetUserName());
+            var user = await _unitOfWork.UserRepository.GetByUsernameAsync(User.GetUserName());
             var result = await _photoService.AddPhotoAsync(file);
-            if(result.Error != null) { return BadRequest(result.Error.Message); }
+            if (result.Error != null) { return BadRequest(result.Error.Message); }
             var photo = new Photo
             {
                 Url = result.SecureUrl.AbsoluteUri,
                 PublicId = result.PublicId,
             };
-            if(user.Photos.Count == 0)
+            if (user.Photos.Count == 0)
             {
                 photo.IsMain = true;
             }
             user.Photos.Add(photo);
-            if(await _userRepository.SaveAllAsync())
+            if (await _unitOfWork.Complete())
             {
                 //return Ok(_mapper.Map<PhotoDto>(photo));
-                return CreatedAtRoute("GetUser",new {username = user.UserName} ,_mapper.Map<PhotoDto>(photo));
+                return CreatedAtRoute("GetUser", new { username = user.UserName }, _mapper.Map<PhotoDto>(photo));
             }
-                
+
             return BadRequest("Problem adding photo");
         }
         [HttpPut("set-main-photo/{photoId}")]
         public async Task<IActionResult> SetMainPhoto(int photoId)
         {
-            var user = await _userRepository.GetByUsernameAsync(User.GetUserName());
+            var user = await _unitOfWork.UserRepository.GetByUsernameAsync(User.GetUserName());
             var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
             if (photo.IsMain) return BadRequest("This is already your main photo");
             var currentMain = user.Photos.FirstOrDefault(x => x.IsMain);
-            if (currentMain != null) 
+            if (currentMain != null)
             {
                 currentMain.IsMain = false;
             }
 
             photo.IsMain = true;
-            if(await _userRepository.SaveAllAsync() )
+            if (await _unitOfWork.Complete())
             {
                 return NoContent();
             }
@@ -123,7 +110,7 @@ namespace ChatApp_Api.Controllers
         [HttpDelete("delete-photo/{photoId}")]
         public async Task<IActionResult> DeletePhoto(int photoId)
         {
-            var user = await _userRepository.GetByUsernameAsync(User.GetUserName());
+            var user = await _unitOfWork.UserRepository.GetByUsernameAsync(User.GetUserName());
             var photo = user.Photos.FirstOrDefault(y => y.Id == photoId);
             if (photo == null) return NotFound();
             if (photo.IsMain) return BadRequest("You can not delete your main photo");
@@ -134,7 +121,7 @@ namespace ChatApp_Api.Controllers
 
             }
             user.Photos.Remove(photo);
-            if (await _userRepository.SaveAllAsync())
+            if (await _unitOfWork.Complete())
             {
                 return Ok();
             }

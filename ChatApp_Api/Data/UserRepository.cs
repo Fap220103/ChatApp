@@ -26,14 +26,14 @@ namespace ChatApp_Api.Data
         public async Task<AppUser> GetByUsernameAsync(string username)
         {
             return await _context.Users
-                                .Include(x=> x.Photos)
+                                .Include(x => x.Photos)
                                 .SingleOrDefaultAsync(u => u.UserName == username);
         }
 
         public async Task<MemberDto> GetMemberAsync(string username)
         {
             return await _context.Users
-                    .Where(x=>x.UserName == username)
+                    .Where(x => x.UserName == username)
                     .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
                     .SingleOrDefaultAsync();
         }
@@ -47,7 +47,7 @@ namespace ChatApp_Api.Data
             var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
             var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
 
-            query = query.Where(u=>u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+            query = query.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
 
             query = userParams.OrderBy switch
             {
@@ -60,16 +60,19 @@ namespace ChatApp_Api.Data
                 userParams.PageSize);
         }
 
+        public async Task<string> GetUserGender(string username)
+        {
+            return await _context.Users
+                .Where(x => x.UserName == username)
+                .Select(x => x.Gender)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<AppUser>> GetUsersAsync()
         {
             return await _context.Users
-                .Include(x=> x.Photos)
+                .Include(x => x.Photos)
                 .ToListAsync();
-        }
-
-        public async Task<bool> SaveAllAsync()
-        {
-            return await _context.SaveChangesAsync() > 0;
         }
 
         public void Update(AppUser user)

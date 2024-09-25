@@ -1,27 +1,33 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Message } from '../../_models/message';
 import { MessageService } from '../../_services/message.service';
 import { NgForm } from '@angular/forms';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-member-messages',
   templateUrl: './member-messages.component.html',
   styleUrls: ['./member-messages.component.css']
 })
-export class MemberMessagesComponent implements OnInit {
+export class MemberMessagesComponent implements OnInit, AfterViewInit {
   @ViewChild('messageForm') messageForm!: NgForm;
-  @Input() messages: Message[] = [];
+  @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
   @Input() username!: string;
   messageContent!: string;
   loading = false;
-  arraymess: Message[] = [];
   constructor(public messageService: MessageService) { }
-
+  ngAfterViewInit(): void {
+    this.scrollToBottom();
+  }
+  scrollToBottom(): void {
+    try {
+      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error('Scroll failed', err);
+    }
+  }
   ngOnInit() {
-    this.messageService.messageThread$.subscribe(mess =>{
-      this.arraymess = mess;
-    });
-    console.log(this.arraymess)
+  
   }
  
   sendMessage(){

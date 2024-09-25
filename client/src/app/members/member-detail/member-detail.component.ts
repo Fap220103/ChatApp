@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MembersService } from '../../_services/members.service';
 import { Member } from '../../_models/member';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgxGalleryAnimation, NgxGalleryImage, NgxGalleryOptions } from '@kolkov/ngx-gallery';
 import { MessageService } from '../../_services/message.service';
 import { Message } from '../../_models/message';
@@ -27,12 +27,14 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   constructor(public presence: PresenceService, 
               private route: ActivatedRoute,
               private messageService: MessageService,
-              private accountService: AccountService) { 
+              private accountService: AccountService,
+              private router: Router) { 
                 this.accountService.currentUser$.pipe(take(1)).subscribe(user =>{
                   if(user){
                     this.user = user;
                   }
                 })  
+                this.router.routeReuseStrategy.shouldReuseRoute = () => false;
               }
  
 
@@ -85,6 +87,8 @@ export class MemberDetailComponent implements OnInit, OnDestroy {
   onTabActivated(data: TabDirective){
     this.activeTab = data;
     if(this.activeTab.heading === 'Messages' && this.user){
+      console.log("user: " + this.user);
+      console.log("other user: " + this.member.username);
       this.messageService.createHubConnection(this.user, this.member.username);
     }
     else{

@@ -25,5 +25,9 @@ namespace ChatApp_Api.Entities
         public ICollection<Message> MessageSent { get; set; }
         public ICollection<Message> MessageReceived { get; set; }
         public ICollection<AppUserRole> UserRoles { get; set; }
+        public ICollection<GroupMembersChat> GroupMembersChats { get; set; }
+        public ICollection<MessagesChat> MessagesSentUser { get; set; }
+        public ICollection<GroupChat> GroupChats { get; set; }
+
     }
 }

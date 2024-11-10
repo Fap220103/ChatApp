@@ -32,13 +32,19 @@ namespace ChatApp_Api.SignalR
         public override async Task OnConnectedAsync()
         {
             var httpContext = Context.GetHttpContext();
+
             var otherUser = httpContext.Request.Query["user"].ToString();
+
             var groupName = GetGroupName(Context.User.GetUserName(), otherUser);
+
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
             var group = await AddToGroup(groupName);
+
             await Clients.Group(groupName).SendAsync("UpdatedGroup", group);
 
             var messages = await _unitOfWork.MessageRepository.GetMessagesThread(Context.User.GetUserName(), otherUser);
+
             if (_unitOfWork.HasChanges()) await _unitOfWork.Complete();
 
             await Clients.Caller.SendAsync("ReceiveMessageThread", messages);
